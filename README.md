@@ -1,7 +1,9 @@
 # Assembly Kitting Manager
 
 ## Features
-- manage Part
+- Spatio-temporal median filter
+- Currently, support only a single instance for each class
+- Support classes: `"ikea_stefan_bottom", "ikea_stefan_long", "ikea_stefan_middle", "ikea_stefan_short", "ikea_stefan_side_left", "ikea_stefan_side_right"`
 
 ## To Do
 
@@ -9,16 +11,31 @@
 
 ## Getting Started
 
-- python 2.7 
-- [assemlby_camera_manager](https://github.com/SeungBack/assembly_camera_manager)
-- [assemlby_part_recognition](https://github.com/SeungBack/assembly_part_recognition)
+- [assembly_msgs](https://github.com/psh117/assembly_msgs)
+- [assembly_camera_manager](https://github.com/SeungBack/assembly_camera_manager)
+- [assembly_part_recognition](https://github.com/SeungBack/assembly_part_recognition)
 
 
-## Published Topics
-#### `/assembly/vis_is`
-- message type: `sensor_msgs/Image`
-- Visualization results of instance segmentation 
+## Published Topics and Servcie
+#### `/assembly/detections/sptmpfilt`
+- message type: `vision_msgs/Detection3DArray`
+- Estimated 6D object pose after applying spatio-temporal median filter
 
+#### `/assembly/markers/sptmpfilt`
+- message type: `visualization_msgs/MarkerArray`
+- Visualization of 6D object pose after applying spatio-temporal median filter
+
+#### `/get_object_pose`
+- message type: `assembly_msgs/GetObjectPose`
+```
+rosservice call /get_object_pose "target_object: 'ikea_stefan_bottom'"
+```
+
+#### `/get_object_pose_array`
+- message type: `assembly_msgs/GetObjectPoseArray`
+```
+rosservice call /get_object_pose_array
+```
 
 ## How to use
 ### Single Camera Setup (Kinect Azure)

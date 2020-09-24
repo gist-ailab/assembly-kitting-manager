@@ -4,7 +4,7 @@ import message_filters
 from vision_msgs.msg import Detection3D, Detection3DArray, ObjectHypothesisWithPose
 from std_msgs.msg import Header
 from geometry_msgs.msg import PoseStamped
-from assembly_msgs.srv import GetObjectPose, GetObjectPoses
+from assembly_msgs.srv import GetObjectPose, GetObjectPoseArray
 from visualization_msgs.msg import Marker, MarkerArray
 import tf2_ros
 import tf.transformations as tf_trans
@@ -73,6 +73,9 @@ class KittingManager():
             cloud = open3d.io.read_point_cloud(ply_model)
             self.dims.append(cloud.get_max_bound())
 
+        self.pose_srv = rospy.Service('/get_object_pose', GetObjectPose, self.return_object_pose)
+        self.pose_array_srv = rospy.Service('/get_object_pose_array', GetObjectPoseArray, self.return_object_pose_array)
+
 
     def callback(self, detection_array):
         ## put hypothesis into queue
@@ -88,8 +91,8 @@ class KittingManager():
         det_header = Header()
         det_header.stamp = rospy.Time()
         det_header.frame_id = "map"
-        filt_detection_array = Detection3DArray()
-        filt_detection_array.header = det_header
+        self.filt_detection_array = Detection3DArray()
+        self.filt_detection_array.header = det_header
         rospy.loginfo_once("Applying spatio-temporal median filter")
         # loop over class_id
         for class_id, hypothesis_que in enumerate(self.hypothesis_que_array):
@@ -135,10 +138,25 @@ class KittingManager():
             filt_detection.bbox.size.x = self.dims[class_id][0] * 0.001 * 2
             filt_detection.bbox.size.y = self.dims[class_id][1] * 0.001 * 2
             filt_detection.bbox.size.z = self.dims[class_id][2] * 0.001 * 2
-            filt_detection_array.detections.append(filt_detection)
+            self.filt_detection_array.detections.append(filt_detection)
 
-        self.filt_detections_pub.publish(filt_detection_array)
-        self.publish_markers(self.filt_markers_pub, filt_detection_array, [255, 13, 13])
+        self.filt_detections_pub.publish(self.filt_detection_array)
+        self.publish_markers(self.filt_markers_pub, self.filt_detection_array, [255, 13, 13])
+
+    def return_object_pose(self, msg):
+
+        target_id = self.pe_class_names.index(msg.target_object) 
+        target_detection = None
+        is_sucess = False
+        for detection in self.filt_detection_array.detections:
+            if target_id == detection.results[0].id:
+                target_detection = detection
+                is_sucess = True     
+              
+        return [target_detection, is_sucess]
+
+    def return_object_pose_array(self, msg):
+        return self.filt_detection_array
 
     def publish_markers(self, publisher, detections_array, color):
         # Delete all existing markers
@@ -201,6 +219,8 @@ class KittingManager():
             marker.mesh_use_embedded_materials = True
             markers.markers.append(marker)
         publisher.publish(markers)
+
+
 
 
 if __name__ == '__main__':
