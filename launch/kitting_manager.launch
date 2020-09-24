@@ -1,0 +1,9 @@
+<launch>
+  
+    <arg name="kitting_manager_yaml" default="kitting_manager"/>
+
+    <rosparam command="load" file="$(find assembly_kitting_manager)/param/$(arg kitting_manager_yaml).yaml" ns="kitting_manager" />
+    <node name="kitting_manager" pkg="assembly_kitting_manager" type="kitting_manager.py" output="screen"/>
+
+
+</launch>

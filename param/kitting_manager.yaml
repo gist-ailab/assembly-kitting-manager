@@ -1,0 +1,7 @@
+# rejection thresh according to res of ppfMatch ICP
+hypothesis_thresh: 0.2
+# spatio_temporal filter size over time
+sptmpfilt_size: 10
+
+ply_model_dir: "/home/demo/catkin_ws/src/assembly_part_recognition/src/AugmentedAutoencoder/3d_models/ply"
+
