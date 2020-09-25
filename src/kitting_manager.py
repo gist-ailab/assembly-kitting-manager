@@ -16,7 +16,6 @@ import scipy
 import glob
 import open3d
 
-
 class KittingManager():
 
     def __init__(self):
@@ -66,11 +65,18 @@ class KittingManager():
         self.filt_markers_pub = rospy.Publisher('/assembly/markers/sptmpfilt', MarkerArray, queue_size=1)
 
         # ply model for visualization
+        self.ply_paths = glob.glob(self.params["model_dir"] + '/ply/*.ply')
+        self.ply_paths.sort()
+        self.ply_centered_pths = glob.glob(self.params["model_dir"] + '/ply_centered/*.ply')
+        self.ply_centered_pths.sort()
         self.dims = []
-        self.ply_model_paths = glob.glob(self.params["ply_model_dir"] + '/*.ply')
-        self.ply_model_paths.sort()
-        for ply_model in self.ply_model_paths:
-            cloud = open3d.io.read_point_cloud(ply_model)
+        self.centroids = []
+        for ply in self.ply_paths:
+            cloud = open3d.io.read_point_cloud(ply)
+            centroid = cloud.get_center()
+            self.centroids.append(centroid)
+        for ply_centered in self.ply_centered_pths:
+            cloud = open3d.io.read_point_cloud(ply_centered)
             self.dims.append(cloud.get_max_bound())
 
         self.pose_srv = rospy.Service('/get_object_pose', GetObjectPose, self.return_object_pose)
@@ -115,10 +121,10 @@ class KittingManager():
             H_cam_to_obj = np.eye(4)
             H_cam_to_obj[:3, 3] = tf_trans.translation_matrix((trans_median))[:3, 3]
             H_cam_to_obj[:3, :3] = tf_trans.quaternion_matrix((quat_median))[:3, :3]
-            T_map_to_obj = np.matmul(self.H_cam_to_map, H_cam_to_obj) 
-            R_map_to_obj = np.matmul(self.H_cam_to_map, H_cam_to_obj)
-            translation = T_map_to_obj[:3, 3]
-            rotation = tf_trans.quaternion_from_matrix(R_map_to_obj)
+            H_map_to_obj = np.matmul(self.H_cam_to_map, H_cam_to_obj) 
+            ## Adjust offset w.r.t centroids
+            translation = H_map_to_obj[:3, 3]
+            rotation = tf_trans.quaternion_from_matrix(H_map_to_obj)
             # H to ros transformation            
             pose_msg = PoseStamped()
             pose_msg.header = det_header
@@ -135,9 +141,9 @@ class KittingManager():
             hypothesis.pose.pose = pose_msg.pose
             filt_detection.results.append(hypothesis)
             filt_detection.bbox.center = pose_msg.pose
-            filt_detection.bbox.size.x = self.dims[class_id][0] * 0.001 * 2
-            filt_detection.bbox.size.y = self.dims[class_id][1] * 0.001 * 2
-            filt_detection.bbox.size.z = self.dims[class_id][2] * 0.001 * 2
+            filt_detection.bbox.size.x = self.dims[class_id][0] * 2
+            filt_detection.bbox.size.y = self.dims[class_id][1] * 2
+            filt_detection.bbox.size.z = self.dims[class_id][2] * 2
             self.filt_detection_array.detections.append(filt_detection)
 
         self.filt_detections_pub.publish(self.filt_detection_array)
@@ -168,7 +174,7 @@ class KittingManager():
         # Object markers
         markers = MarkerArray()
         for i, det in enumerate(detections_array.detections):
-            name = self.ply_model_paths[det.results[0].id].split('/')[-1][5:-4]
+            name = self.ply_paths[det.results[0].id].split('/')[-1][5:-4]
             # cube marker
             marker = Marker()
             marker.header = detections_array.header
@@ -212,10 +218,10 @@ class KittingManager():
             marker.ns = "meshes"
             marker.id = i
             marker.type = Marker.MESH_RESOURCE
-            marker.scale.x = 0.001
-            marker.scale.y = 0.001
-            marker.scale.z = 0.001
-            marker.mesh_resource = "file://" + self.ply_model_paths[det.results[0].id]
+            marker.scale.x = 1
+            marker.scale.y = 1
+            marker.scale.z = 1
+            marker.mesh_resource = "file://" + self.ply_paths[det.results[0].id]
             marker.mesh_use_embedded_materials = True
             markers.markers.append(marker)
         publisher.publish(markers)

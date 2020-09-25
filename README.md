@@ -53,7 +53,7 @@ $ rosservice call /azure1/extrinsic_calibration "target_fiducial_ids: [1]"
 ```
 4. 6d object pose estimation using MPAAE
 ```
-$ roslaunch assembly_part_recognition single_azure_mpaae.launch
+$ roslaunch assembly_part_recognition single_azure_mpaae.launch yaml:=single_azure_mpaae_SNU
 ```
 5. launch kitting manager
 ```
