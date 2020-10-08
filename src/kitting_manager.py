@@ -85,11 +85,12 @@ class KittingManager():
 
     def callback(self, detection_array):
         ## put hypothesis into queue
+        print("\n")
         for detection in detection_array.detections:
             hypothesis = detection.results[0]
             # reject the hypothesis with low score
             if hypothesis.score > self.reject_thresh:
-                # print("{} rejected : {} > {}".format(self.pe_class_names[hypothesis.id], hypothesis.score, self.reject_thresh))
+                print("reject {} \t {} < {}".format(self.pe_class_names[hypothesis.id].split('_')[-1], self.reject_thresh, hypothesis.score))
                 continue
             if self.hypothesis_que_array[hypothesis.id].qsize() == self.sptmpfilt_size:
                 self.hypothesis_que_array[hypothesis.id].get()

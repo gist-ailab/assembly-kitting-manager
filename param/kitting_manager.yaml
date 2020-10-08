@@ -1,7 +1,7 @@
-# rejection thresh according to res of ppfMatch ICP
-hypothesis_thresh: 0.2
+# rejection thresh according to vsd error
+hypothesis_thresh: 0.75
 # spatio_temporal filter size over time
 sptmpfilt_size: 10
 
-model_dir: "/home/dyros/catkin_ws/src/assembly_knowledge/models"
+model_dir: "/home/demo/catkin_ws/src/assembly_knowledge/models"
 
