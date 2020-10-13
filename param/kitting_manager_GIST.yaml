@@ -1,5 +1,5 @@
 # rejection thresh according to vsd error
-hypothesis_thresh: 0.75
+hypothesis_thresh: 0.8
 # spatio_temporal filter size over time
 sptmpfilt_size: 10
 

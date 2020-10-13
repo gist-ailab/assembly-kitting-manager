@@ -57,7 +57,7 @@ $ roslaunch assembly_part_recognition single_azure_mpaae.launch yaml:=single_azu
 ```
 5. launch kitting manager
 ```
-$ roslaunch assembly_kitting_manager kitting_manager.launch
+$ roslaunch assembly_kitting_manager kitting_manager.launch yaml:=kitting_manager_SNU
 ```
 
 ## Authors

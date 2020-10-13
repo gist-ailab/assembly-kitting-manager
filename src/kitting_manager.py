@@ -53,7 +53,7 @@ class KittingManager():
 
         self.params = rospy.get_param("kitting_manager")
         self.sptmpfilt_size = self.params["sptmpfilt_size"]
-        self.reject_thresh = self.params["hypothesis_thresh"]
+        self.hypothesis_thresh = self.params["hypothesis_thresh"]
 
         self.hypothesis_que_array = [] 
         for i in self.hypothesis_ids:
@@ -85,13 +85,15 @@ class KittingManager():
 
     def callback(self, detection_array):
         ## put hypothesis into queue
-        print("\n")
+        print("-------------------------------")
         for detection in detection_array.detections:
             hypothesis = detection.results[0]
             # reject the hypothesis with low score
-            if hypothesis.score > self.reject_thresh:
-                print("reject {} \t {} < {}".format(self.pe_class_names[hypothesis.id].split('_')[-1], self.reject_thresh, hypothesis.score))
+            if hypothesis.score > self.hypothesis_thresh[hypothesis.id]:
+                print("reject {} \t {} < {}".format(self.pe_class_names[hypothesis.id].split('_')[-1], self.hypothesis_thresh[hypothesis.id], hypothesis.score))
                 continue
+            else:
+                print("accept {} \t {} > {}".format(self.pe_class_names[hypothesis.id].split('_')[-1], self.hypothesis_thresh[hypothesis.id], hypothesis.score))
             if self.hypothesis_que_array[hypothesis.id].qsize() == self.sptmpfilt_size:
                 self.hypothesis_que_array[hypothesis.id].get()
             self.hypothesis_que_array[hypothesis.id].put(hypothesis)
