@@ -38,26 +38,45 @@ rosservice call /get_object_pose_array
 ```
 
 ## How to use
-### Single Camera Setup (Kinect Azure)
-1. launch k4a driver
+
+### Recognition
+1. Launch camera node and manager
 ```
-$ ROS_NAMESPACE=azure1 roslaunch azure_kinect_ros_driver driver.launch color_resolution:=720P depth_mode:=NFOV_2X2BINNED fps:=5  tf_prefix:=azure1_
+$ ROS_NAMESPACE=azure1 roslaunch azure_kinect_ros_driver driver.launch color_resolution:=1440P depth_mode:=NFOV_2X2BINNED fps:=5 tf_prefix:=azure1_
+$ ass & roslaunch assembly_camera_manager single_azure_manager.launch 
 ```
-2. launch k4a manager 
+
+3. Get camera pose from marker
 ```
-$ roslaunch assembly_camera_manager single_azure_manager.launch target_fiducial_id:="1"
+$ rosservice call /azure1/get_camera_pose_single_marker \
+    "{publish_worldmap: true, target_id: 6, n_frame: 1, \
+      img_err_thresh: 0.02, obj_err_thresh: 0.01}" 
 ```
-3. camera to map calibration 
+4. Launch kitting manager
 ```
-$ rosservice call /azure1/extrinsic_calibration "target_fiducial_ids: [1]"
+$ ass && roslaunch assembly_kitting_manager kitting_manager.launch yaml:=azure_centermask_GIST
 ```
-4. 6d object pose estimation using MPAAE
+
+5. Instance segmentation using centermask
 ```
-$ roslaunch assembly_part_recognition single_azure_mpaae.launch yaml:=single_azure_mpaae_SNU
+$ ass37 && python /home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask_client.py
 ```
-5. launch kitting manager
+
+6. Bracket
 ```
-$ roslaunch assembly_kitting_manager kitting_manager.launch yaml:=kitting_manager_SNU
+$ ass37 && python /home/demo/catkin_ws/src/assembly_kitting_manager/src/bracket_client.py
+```
+
+6. Side
+```
+$ ass37 && python /home/demo/catkin_ws/src/assembly_kitting_manager/src/side_client.py
+```
+
+### Control
+
+At Franka
+```
+$ gai && roslaunch panda_moveit_config panda_control_moveit_rviz.launch
 ```
 
 ## Authors

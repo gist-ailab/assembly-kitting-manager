@@ -1,8 +1,0 @@
-# rejection thresh according to vsd error
-pe_class_names: ["ikea_stefan_bottom", "ikea_stefan_long", "ikea_stefan_middle", "ikea_stefan_short", "ikea_stefan_side_left", "ikea_stefan_side_right"]
-hypothesis_thresh: [0.2, 0.3, 0.75, 0.3, 0.8, 0.8] # 
-# spatio_temporal filter size over time
-sptmpfilt_size: 5
-
-model_dir: "/home/dyros/catkin_ws/src/assembly_knowledge/models"
-

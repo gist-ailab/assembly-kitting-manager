@@ -1,0 +1,51 @@
+# Camera
+camera_info: "/zivid_camera/color/camera_info"
+camera_frame: "zivid_optical_frame"
+rgb: "/zivid_camera/color/image_color"
+depth: "/zivid_camera/depth/image_raw"
+point: "/zivid_camera/points"
+width: 1920
+height: 1200
+camera_map_path: /home/demo/catkin_ws/src/assembly_camera_manager/maps/camera/base_to_azure1_rgb_camera_link_20201103-150928.json
+K: [2782.7666015625, 0.0, 957.6043701171875, 0.0, 2782.5361328125, 590.6272583007812, 0.0, 0.0, 1.0]
+min_depth: 1.0
+max_depth: 2.3
+
+class_names: ["background", "ikea_stefan_bracket", "ikea_stefan_bolt_side", "ikea_stefan_bolt_hip", "ikea_stefan_pin"]
+
+
+# Center Mask
+is_gpu_id: "1"
+is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask2/output/centermask_zivid.pth"
+is_config_file: "/home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/Base-CenterMask-VoVNet.yaml"
+is_thresh: 0.5
+seg_thresh: 0.8
+roi: [0, 1920, 0, 1200]
+
+# MPAAE
+pe_gpu_id: "0"
+pe_experiment_name: "exp_group/ikea_stefan_connector"
+pe_test_config: "mpaae_zivid.cfg"
+use_mask_crop: [False, False, False, False] # w.r.t is_class names
+use_sameWHcrop: [True, True, True, True] 
+model_dir: "/home/demo/catkin_ws/src/assembly_knowledge/models"
+black_borders: True
+
+# ICP
+n_points: 500
+n_iter: 1000
+tolerance: 0.0005
+num_levels: 7
+scale: 0.001
+
+# Reprojection Error (VSD)
+cost_type: "step" # step or tlinear
+delta: 20
+tau: 50
+
+# TCP setup
+tcp_ip: 'localhost'
+centermask_tcp_port: 5002
+sim_tcp_port: 5003
+
+
