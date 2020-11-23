@@ -41,7 +41,7 @@ rosservice call /get_object_pose_array
 1. Launch camera node and manager
 ```
 $ ROS_NAMESPACE=azure1 roslaunch azure_kinect_ros_driver driver.launch color_resolution:=1440P depth_mode:=NFOV_2X2BINNED fps:=5 tf_prefix:=azure1_
-$ ass & roslaunch assembly_camera_manager single_azure_manager.launch 
+$ ass && roslaunch assembly_camera_manager single_azure_manager.launch 
 ```
 
 2. Set camera pose from yaml
@@ -49,7 +49,7 @@ $ ass & roslaunch assembly_camera_manager single_azure_manager.launch
 # gist
 $ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201119-133337'"
 # snu
-$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201123-105837'"
+$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201123-153559'"
 ```
 3. Launch kitting manager
 ```

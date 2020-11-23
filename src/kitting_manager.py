@@ -147,7 +147,8 @@ class KittingManager:
             elif self.params["class_names"][label+1] == "ikea_stefan_pin":
                 angle, p1, vis_img = identify_pin(vis_img, cntr, p1)
             
-            self.object_ids.append(label)
+            object_id = self.params["class_names"][label+1] 
+            self.object_ids.append(object_id)
             # visualize results
             vis_img = cv2.putText(vis_img, str(np.rad2deg(angle))[:3], (int(x1)-5, int(y2)+30), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.LINE_AA)
             vis_img = cv2.putText(vis_img, self.params["class_names"][label+1].split('_')[-1], (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.FONT_HERSHEY_SIMPLEX)
