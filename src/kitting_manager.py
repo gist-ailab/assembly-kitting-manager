@@ -9,9 +9,8 @@ import message_filters
 
 from std_msgs.msg import String, Header
 from sensor_msgs.msg import RegionOfInterest, Image, CameraInfo, PointCloud2
-from vision_msgs.msg import Detection3D, Detection3DArray, ObjectHypothesisWithPose
-from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import Pose, PoseStamped, PoseArray
+from assembly_msgs.srv import GetObjectPoseArray
 import tf.transformations as tf_trans
 
 import numpy as np
@@ -44,15 +43,15 @@ class KittingManager:
         self.tf_buffer = tf2_ros.Buffer(rospy.Duration(1.0))
         self.listener = tf2_ros.TransformListener(self.tf_buffer)
         rospy.loginfo("Waiting for transform for map to {}".format(self.params["camera_frame"]))
-        # while True:
-        #     try:
-        #         self.transform_map_to_cam = self.tf_buffer.lookup_transform("map", self.params["camera_frame"], rospy.Time(), rospy.Duration(1.0))
-        #     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-        #         rospy.sleep(0.5)
-        #     else:
-        #         self.H_map2cam = orh.msg_to_se3(self.transform_map_to_cam)
-        #         rospy.loginfo("Sucessfully got transform from map to {}".format(self.params["camera_frame"]))
-        #         break
+        while True:
+            try:
+                self.transform_map_to_cam = self.tf_buffer.lookup_transform("map", self.params["camera_frame"], rospy.Time(), rospy.Duration(1.0))
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+                rospy.sleep(0.5)
+            else:
+                self.H_map2cam = orh.msg_to_se3(self.transform_map_to_cam)
+                rospy.loginfo("Sucessfully got transform from map to {}".format(self.params["camera_frame"]))
+                break
 
         rospy.loginfo("Waiting for CenterMask client {}:{}".format(self.params["tcp_ip"], self.params["centermask_tcp_port"]))
         self.cm_sock, _ = su.initialize_server(self.params["tcp_ip"], self.params["centermask_tcp_port"])
@@ -74,7 +73,7 @@ class KittingManager:
         # publishers
         self.vis_is_pub = rospy.Publisher('/assembly/vis_kitting', Image, queue_size=1)
         self.pose_array_pub = rospy.Publisher('/assembly/connector_pose', PoseArray, queue_size=1)
-
+        self.objectposes_srv = rospy.Service('/get_object_pose_array', GetObjectPoseArray, self.get_object_pose_array)
 
     def inference(self, rgb, pc_msg):
         ## 1. Get rgb, depth, point cloud
@@ -85,6 +84,7 @@ class KittingManager:
         (x1, x2, y1, y2) = self.params["roi"]
         rgb_img = cv2.resize(np.uint8(rgb)[y1:y2, x1:x2], (self.params["width"], self.params["height"]), interpolation=cv2.INTER_LINEAR)
         cloud_cam = orh.rospc_to_o3dpc(pc_msg, remove_nans=True) 
+
         ## 2. Run centermask with client    
         su.sendall_image(self.cm_sock, rgb_img)
         vis_img = su.recvall_image(self.cm_sock)
@@ -98,9 +98,10 @@ class KittingManager:
         self.vis_is_pub.publish(self.bridge.cv2_to_imgmsg(vis_img))
         
         ## 4. Convert 2d pose to 3d pose
-
         cloud_cam.estimate_normals()
-        pose_3d_array = self.convert_2d_to_3d_pose(camera_header, poses_2d, cloud_cam)
+        header = camera_header
+        header.frame_id = "map"
+        pose_3d_array = self.convert_2d_to_3d_pose(header, poses_2d, cloud_cam)
         self.pose_array_pub.publish(pose_3d_array)
         
 
@@ -108,6 +109,7 @@ class KittingManager:
     def detect_2d_pose(self, rgb_img, vis_img, pred_classes, pred_boxes, pred_scores, pred_masks):
         boxes, scores, is_obj_ids, rgb_crops, is_masks = [], [], [], [], []
         poses_2d = []
+        self.object_ids = [] 
         for itr, (label, (x1, y1, x2, y2), score, mask) in enumerate(zip(pred_classes, pred_boxes, pred_scores, pred_masks)):
             if score < self.params["is_thresh"]:
                 continue
@@ -145,6 +147,7 @@ class KittingManager:
             elif self.params["class_names"][label+1] == "ikea_stefan_pin":
                 angle, p1, vis_img = identify_pin(vis_img, cntr, p1)
             
+            self.object_ids.append(label)
             # visualize results
             vis_img = cv2.putText(vis_img, str(np.rad2deg(angle))[:3], (int(x1)-5, int(y2)+30), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.LINE_AA)
             vis_img = cv2.putText(vis_img, self.params["class_names"][label+1].split('_')[-1], (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.FONT_HERSHEY_SIMPLEX)
@@ -154,11 +157,14 @@ class KittingManager:
             poses_2d.append(pose_2d)
         return poses_2d, vis_img
 
-    def convert_2d_to_3d_pose(self, camera_header, poses_2d, cloud_cam):
+    def convert_2d_to_3d_pose(self, header, poses_2d, cloud_cam):
         
-        pose_3d_array = PoseArray()
-        pose_3d_array.header = camera_header
-        pose_3d_array.poses = []
+        self.object_poses = PoseArray()
+        self.object_poses.header = header
+        self.object_poses.poses = []
+        self.grasp_poses = PoseArray()
+        self.grasp_poses.header = header
+        self.grasp_poses.poses = []
         for pose_2d in poses_2d:
             start_time = time.time()
             px = pose_2d["px"]
@@ -177,28 +183,25 @@ class KittingManager:
                 continue
             # get normal vector around px, py
             # normal_center_npy = np.asarray(cloud_center.normals)
-            # normal = np.median(normal_center_npy, axis=0)
-            # # angle w.r.t image frame to normal 
-            # v1 = np.array([0, -30, 1])
-            # v2 = np.array([-30*math.cos(angle), 30*math.sin(angle), 1])
-            # o = np.array([0, 0, 1])
-            # V1 = np.matmul(np.linalg.inv(self.K_cropped), v1) * pos[-1]
-            # V2 = np.matmul(np.linalg.inv(self.K_cropped), v2) * pos[-1]
-            # O = np.matmul(np.linalg.inv(self.K_cropped), o) * pos[-1]
-            # V1 = V1 - O
-            # V2 = V2 - O
-            # print(normal)
-            # print(np.rad2deg(angle), vg.angle(V1, V2))
-            # ori_2d = np.array([-30*math.cos(angle), 30*math.sin(angle), 1])
-            # ori_3d = np.matmul(np.linalg.inv(self.K_cropped), ori_2d) * pos[-1]
-            # if angle > np.pi:
-                # angle - np.pi/2
-            normal_rot = tf_trans.rotation_matrix(angle + np.deg2rad(self.params["angle_offset"]), (0, 0, 1))
-            quat = tf_trans.quaternion_from_matrix(normal_rot)
-            pose_3d_array.poses.append(orh.pq_to_pose(pos, quat))
-        print("===")
-        return pose_3d_array
+            # normal = - np.median(normal_center_npy, axis=0)
+            # rot = tf_trans.rotation_matrix
 
+
+            H_cam2obj = np.eye(4)
+            H_cam2obj[:3, 3] = pos
+            H_cam2obj[:3, :3] = tf_trans.rotation_matrix(angle + np.deg2rad(self.params["angle_offset"]), (0, 0, 1))[:3, :3]
+            H_map2obj = np.matmul(self.H_map2cam, H_cam2obj)
+            pos = H_map2obj[:3, 3]
+            quat = tf_trans.quaternion_from_matrix(H_map2obj)
+            object_pose = orh.pq_to_pose(pos, quat)
+            self.object_poses.poses.append(object_pose)
+            self.grasp_poses.poses.append(object_pose)
+
+        return self.object_poses
+
+    def get_object_pose_array(self, msg):
+        
+        return [self.object_poses, self.grasp_poses, self.object_ids]
 
 
 

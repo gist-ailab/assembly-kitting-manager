@@ -1,0 +1,45 @@
+# Camera
+camera_info: "/azure1/rgb/camera_info"
+camera_frame: "azure1_rgb_camera_link"
+rgb: "/azure1/rgb/image_raw"
+depth: "/azure1/depth_to_rgb/image_raw"
+point: "/azure1/filt_points2"
+grid_size: 3
+original_width: 2560
+original_height: 1440
+width: 1280
+height: 720
+camera_map_path: /home/dyros/catkin_ws/src/assembly_camera_manager/maps/camera/base_to_azure1_rgb_camera_link_20201103-150928.json
+K: [1829.80615234375, 0.0, 1917.642578125, 0.0, 1829.9080810546875, 1105.095458984375, 0.0, 0.0, 1.0]
+roi: [640, 1920, 360, 1080]
+class_names: ["background", "ikea_stefan_bracket", "ikea_stefan_bolt_side", "ikea_stefan_bolt_hip", "ikea_stefan_pin"]
+
+
+# Center Mask
+is_gpu_id: "1"
+is_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask.pth"
+is_config_file: "/home/dyros/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_FPN_ms_3x.yaml"
+is_thresh: 0.5
+
+# 2D to 3D pose
+crop_offset: 0.05
+pix_near: 60
+angle_offset: 0
+
+# bracket
+bracket_gpu_id: "1"
+bracket_model_name: "mixnet_xl"
+bracket_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/bracket.pth"
+
+# side
+side_gpu_id: "1"
+side_model_name: "mixnet_xl"
+side_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/side.pth"
+
+# TCP setup
+tcp_ip: 'localhost'
+centermask_tcp_port: 5002
+bracket_tcp_port: 5003
+side_tcp_port: 5003
+
+

@@ -1,9 +1,9 @@
 # Assembly Kitting Manager
 
 ## Features
-- Spatio-temporal median filter
-- Currently, support only a single instance for each class
-- Support classes: `"ikea_stefan_bottom", "ikea_stefan_long", "ikea_stefan_middle", "ikea_stefan_short", "ikea_stefan_side_left", "ikea_stefan_side_right"`
+- connector detection (CenterMask 2)
+- Axis detection (PCA + Binary classification)
+- Convert 2D pose to 3D pose
 
 ## To Do
 
@@ -13,29 +13,27 @@
 
 - [assembly_msgs](https://github.com/psh117/assembly_msgs)
 - [assembly_camera_manager](https://github.com/SeungBack/assembly_camera_manager)
-- [assembly_part_recognition](https://github.com/SeungBack/assembly_part_recognition)
+
 
 
 ## Published Topics and Servcie
-#### `/assembly/detections/sptmpfilt`
-- message type: `vision_msgs/Detection3DArray`
-- Estimated 6D object pose after applying spatio-temporal median filter
 
-#### `/assembly/markers/sptmpfilt`
-- message type: `visualization_msgs/MarkerArray`
-- Visualization of 6D object pose after applying spatio-temporal median filter
+#### `/assembly/vis_kitting`
+- message type: `sensor_msgs/Image`
+- Visualized result in 2D image
 
-#### `/get_object_pose`
-- message type: `assembly_msgs/GetObjectPose`
-```
-rosservice call /get_object_pose "target_object: 'ikea_stefan_bottom'"
-```
+#### `/assembly/connector_pose`
+- message type: `geometry_msgs/PoseArray`
+- Visualized result in 3D point cloud
 
 #### `/get_object_pose_array`
-- message type: `assembly_msgs/GetObjectPoseArray`
+- service type: `assembly_msgs/GetObjectPoseArray`
+- return object poses, grasp_poses and object ids 
+- 0: bracket, 1: bolt_side, 2: bolt_hip, 3: pin
 ```
 rosservice call /get_object_pose_array
 ```
+
 
 ## How to use
 
@@ -46,38 +44,33 @@ $ ROS_NAMESPACE=azure1 roslaunch azure_kinect_ros_driver driver.launch color_res
 $ ass & roslaunch assembly_camera_manager single_azure_manager.launch 
 ```
 
-3. Get camera pose from marker
+2. Set camera pose from yaml
 ```
-$ rosservice call /azure1/get_camera_pose_single_marker \
-    "{publish_worldmap: true, target_id: 6, n_frame: 1, \
-      img_err_thresh: 0.02, obj_err_thresh: 0.01}" 
+# gist
+$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201119-133337'"
+# snu
+$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201123-105837'"
 ```
-4. Launch kitting manager
+3. Launch kitting manager
 ```
 $ ass && roslaunch assembly_kitting_manager kitting_manager.launch yaml:=azure_centermask_GIST
 ```
 
-5. Instance segmentation using centermask
+4. Instance segmentation using centermask
 ```
-$ ass37 && python /home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask_client.py
+$ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/centermask_client.py
 ```
 
-6. Bracket
+5. Bracket
 ```
-$ ass37 && python /home/demo/catkin_ws/src/assembly_kitting_manager/src/bracket_client.py
+$ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/bracket_client.py
 ```
 
 6. Side
 ```
-$ ass37 && python /home/demo/catkin_ws/src/assembly_kitting_manager/src/side_client.py
+$ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/side_client.py
 ```
 
-### Control
-
-At Franka
-```
-$ gai && roslaunch panda_moveit_config panda_control_moveit_rviz.launch
-```
 
 ## Authors
 * **Seunghyeok Back** [seungback](https://github.com/SeungBack)

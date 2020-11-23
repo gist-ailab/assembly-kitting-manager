@@ -12,7 +12,7 @@ from detectron2.data import MetadataCatalog
 from detectron2.engine.defaults import DefaultPredictor
 from detectron2.utils.visualizer import ColorMode, Visualizer
 
-from video_visualizer import VideoVisualizer
+from .video_visualizer import VideoVisualizer
 
 
 class VisualizationDemo(object):
