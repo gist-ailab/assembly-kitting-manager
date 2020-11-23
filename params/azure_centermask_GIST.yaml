@@ -29,7 +29,7 @@ angle_offset: -90
 # bracket
 bracket_gpu_id: "1"
 bracket_model_name: "mixnet_xl"
-bracket_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/000.pth"
+bracket_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/bracket.pth"
 
 # side
 side_gpu_id: "1"

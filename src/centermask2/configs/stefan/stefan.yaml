@@ -1,0 +1,9 @@
+_BASE_: "Base-CenterMask-VoVNet.yaml"
+MODEL:
+  WEIGHTS: "https://www.dropbox.com/s/q98pypf96rhtd8y/vovnet39_ese_detectron2.pth?dl=1"
+  VOVNET:
+    CONV_BODY : "V-39-eSE"
+SOLVER:
+  STEPS: (0, 60000)
+  MAX_ITER: 60000
+OUTPUT_DIR: "/data/jongwon/output/stefan"
