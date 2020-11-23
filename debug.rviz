@@ -1,6 +1,6 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 138
+    Help Height: 0
     Name: Displays
     Property Tree Widget:
       Expanded:
@@ -10,7 +10,7 @@ Panels:
         - /Image1
         - /PoseArray2
       Splitter Ratio: 0.5
-    Tree Height: 510
+    Tree Height: 359
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -59,25 +59,151 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: true
+        All Enabled: false
         azure1_camera_base:
-          Value: true
+          Value: false
         azure1_camera_body:
-          Value: true
+          Value: false
         azure1_camera_visor:
-          Value: true
+          Value: false
         azure1_depth_camera_link:
-          Value: true
+          Value: false
         azure1_imu_link:
-          Value: true
+          Value: false
         azure1_rgb_camera_link:
           Value: true
         base:
-          Value: true
+          Value: false
         map:
           Value: true
         map_table:
           Value: true
+        panda_left_EE:
+          Value: true
+        panda_left_K:
+          Value: false
+        panda_left_hand:
+          Value: false
+        panda_left_leftfinger:
+          Value: false
+        panda_left_link0:
+          Value: true
+        panda_left_link1:
+          Value: false
+        panda_left_link1_augmented:
+          Value: false
+        panda_left_link2:
+          Value: false
+        panda_left_link2_augmented:
+          Value: false
+        panda_left_link3:
+          Value: false
+        panda_left_link3_augmented:
+          Value: false
+        panda_left_link4:
+          Value: false
+        panda_left_link4_augmented:
+          Value: false
+        panda_left_link5:
+          Value: false
+        panda_left_link5_augmented:
+          Value: false
+        panda_left_link6:
+          Value: false
+        panda_left_link6_augmented:
+          Value: false
+        panda_left_link7:
+          Value: false
+        panda_left_link7_augmented:
+          Value: false
+        panda_left_link8:
+          Value: false
+        panda_left_rightfinger:
+          Value: false
+        panda_right_EE:
+          Value: true
+        panda_right_K:
+          Value: false
+        panda_right_finger_left_link:
+          Value: false
+        panda_right_finger_right_link:
+          Value: false
+        panda_right_hand:
+          Value: false
+        panda_right_link0:
+          Value: true
+        panda_right_link1:
+          Value: false
+        panda_right_link1_augmented:
+          Value: false
+        panda_right_link2:
+          Value: false
+        panda_right_link2_augmented:
+          Value: false
+        panda_right_link3:
+          Value: false
+        panda_right_link3_augmented:
+          Value: false
+        panda_right_link4:
+          Value: false
+        panda_right_link4_augmented:
+          Value: false
+        panda_right_link5:
+          Value: false
+        panda_right_link5_augmented:
+          Value: false
+        panda_right_link6:
+          Value: false
+        panda_right_link6_augmented:
+          Value: false
+        panda_right_link7:
+          Value: false
+        panda_right_link7_augmented:
+          Value: false
+        panda_right_link8:
+          Value: false
+        panda_top_EE:
+          Value: true
+        panda_top_K:
+          Value: false
+        panda_top_finger_left_link:
+          Value: false
+        panda_top_finger_right_link:
+          Value: false
+        panda_top_hand:
+          Value: false
+        panda_top_link0:
+          Value: true
+        panda_top_link1:
+          Value: false
+        panda_top_link1_augmented:
+          Value: false
+        panda_top_link2:
+          Value: false
+        panda_top_link2_augmented:
+          Value: false
+        panda_top_link3:
+          Value: false
+        panda_top_link3_augmented:
+          Value: false
+        panda_top_link4:
+          Value: false
+        panda_top_link4_augmented:
+          Value: false
+        panda_top_link5:
+          Value: false
+        panda_top_link5_augmented:
+          Value: false
+        panda_top_link6:
+          Value: false
+        panda_top_link6_augmented:
+          Value: false
+        panda_top_link7:
+          Value: false
+        panda_top_link7_augmented:
+          Value: false
+        panda_top_link8:
+          Value: false
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -90,6 +216,78 @@ Visualization Manager:
           map:
             map_table:
               {}
+          panda_left_link0:
+            panda_left_link1_augmented:
+              panda_left_link1:
+                panda_left_link2_augmented:
+                  panda_left_link2:
+                    panda_left_link3_augmented:
+                      panda_left_link3:
+                        panda_left_link4_augmented:
+                          panda_left_link4:
+                            panda_left_link5_augmented:
+                              panda_left_link5:
+                                panda_left_link6_augmented:
+                                  panda_left_link6:
+                                    panda_left_link7_augmented:
+                                      panda_left_link7:
+                                        panda_left_link8:
+                                          panda_left_EE:
+                                            panda_left_K:
+                                              {}
+                                          panda_left_hand:
+                                            panda_left_leftfinger:
+                                              {}
+                                            panda_left_rightfinger:
+                                              {}
+          panda_right_link0:
+            panda_right_link1_augmented:
+              panda_right_link1:
+                panda_right_link2_augmented:
+                  panda_right_link2:
+                    panda_right_link3_augmented:
+                      panda_right_link3:
+                        panda_right_link4_augmented:
+                          panda_right_link4:
+                            panda_right_link5_augmented:
+                              panda_right_link5:
+                                panda_right_link6_augmented:
+                                  panda_right_link6:
+                                    panda_right_link7_augmented:
+                                      panda_right_link7:
+                                        panda_right_link8:
+                                          panda_right_EE:
+                                            panda_right_K:
+                                              {}
+                                          panda_right_hand:
+                                            panda_right_finger_left_link:
+                                              {}
+                                            panda_right_finger_right_link:
+                                              {}
+          panda_top_link0:
+            panda_top_link1_augmented:
+              panda_top_link1:
+                panda_top_link2_augmented:
+                  panda_top_link2:
+                    panda_top_link3_augmented:
+                      panda_top_link3:
+                        panda_top_link4_augmented:
+                          panda_top_link4:
+                            panda_top_link5_augmented:
+                              panda_top_link5:
+                                panda_top_link6_augmented:
+                                  panda_top_link6:
+                                    panda_top_link7_augmented:
+                                      panda_top_link7:
+                                        panda_top_link8:
+                                          panda_top_EE:
+                                            panda_top_K:
+                                              {}
+                                          panda_top_hand:
+                                            panda_top_finger_left_link:
+                                              {}
+                                            panda_top_finger_right_link:
+                                              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -206,25 +404,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.9072757959365845
+      Distance: 2.8001492023468018
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.25377941131591797
-        Y: -0.32923659682273865
-        Z: 0.6757297515869141
+        X: 0.36273545026779175
+        Y: 0.431992769241333
+        Z: 1.002075433731079
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1247971057891846
+      Pitch: 1.0364972352981567
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.237623929977417
+      Yaw: 1.9691802263259888
     Saved: ~
 Window Geometry:
   Displays:
@@ -234,7 +432,7 @@ Window Geometry:
   Hide Right Dock: false
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd000000040000000000000629000006fffc020000000ffb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b000fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000006e000002f60000018200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000001fc000002e10000000000000000fb0000000a0049006d006100670065000000026f000001210000000000000000fb0000000a0049006d00610067006501000004e9000000260000000000000000fb0000000a0049006d006100670065010000051b000000260000000000000000fb0000000a0049006d006100670065010000054d000000260000000000000000fb0000000a0049006d0061006700650100000370000002740000002600fffffffb0000000a0049006d00610067006501000005f00000017d0000002600ffffff000000010000010f0000034bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000470000034b0000013200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073d0000005afc0100000002fb0000000800540069006d006501000000000000073d0000057100fffffffb0000000800540069006d0065010000000000000450000000000000000000000108000006ff00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000002b0000006fffc020000000ffb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b000fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000006e000001d50000018200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000001fc000000970000000000000000fb0000000a0049006d006100670065000000026f000001210000000000000000fb0000000a0049006d006100670065010000029f000000260000000000000000fb0000000a0049006d00610067006501000002d1000000260000000000000000fb0000000a0049006d0061006700650100000303000000260000000000000000fb0000000a0049006d006100670065010000024f0000028d0000002600fffffffb0000000a0049006d00610067006501000004e8000002850000002600ffffff000000010000010f0000034bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000470000034b0000013200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7a0000005afc0100000002fb0000000800540069006d0065010000000000000e7a0000057100fffffffb0000000800540069006d0065010000000000000450000000000000000000000bbe000006ff00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -243,6 +441,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1853
+  Width: 3706
   X: 1987
   Y: 55
