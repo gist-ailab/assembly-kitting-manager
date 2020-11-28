@@ -13,11 +13,11 @@ from easy_tcp_python2_3 import socket_utils as su
 import yaml
 from pathlib import Path
 import cv2
-
+import time
 
 if __name__ == "__main__" :
 
-    yaml_path = os.path.join(Path(__file__).parent.parent, "params", "azure_centermask_SNU.yaml")
+    yaml_path = os.path.join(Path(__file__).parent.parent, "params", "azure_centermask_GIST.yaml")
     with open(yaml_path) as f:
         params = yaml.load(f, Loader=yaml.FullLoader)
     
@@ -40,14 +40,18 @@ if __name__ == "__main__" :
 
     while True:
         img = su.recvall_image(sock) 
-        img = cv2.resize(img, (32, 32), interpolation=cv2.INTER_LINEAR)
+        img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
+        # cv2.imwrite('/home/demo/catkin_ws/src/assembly_kitting_manager/src/0/{}.png'.format(time.time()), img)
+        # print(time.time())
+        # time.sleep(0.3)
         img = transform(img).unsqueeze(0)
         output = model(img.to(device))
 
         topk=(1,)
         maxk = max(topk)
         _, pred = output.topk(maxk, 1, True, True)
-        pred = pred.t()[0]
+        pred = np.bool(pred.t()[0].cpu().detach().numpy())
+        pred = not pred
         su.sendall_pickle(sock, pred)
 
     sock.close()

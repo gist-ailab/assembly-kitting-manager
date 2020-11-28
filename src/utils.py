@@ -194,8 +194,8 @@ def pca_analysis(pts, img):
     cntr = (int(mean[0,0]), int(mean[0,1]))
     
     cv2.circle(img, cntr, 3, (0, 0, 255), 6)
-    p1 = (cntr[0] + 0.02 * eigenvectors[0,0] * eigenvalues[0,0], cntr[1] + 0.02 * eigenvectors[0,1] * eigenvalues[0,0])
-    p2 = (cntr[0] - 0.02 * eigenvectors[1,0] * eigenvalues[1,0], cntr[1] - 0.02 * eigenvectors[1,1] * eigenvalues[1,0])
+    p1 = (cntr[0] + 0.01 * eigenvectors[0,0] * eigenvalues[0,0], cntr[1] + 0.01 * eigenvectors[0,1] * eigenvalues[0,0])
+    p2 = (cntr[0] - 0.01 * eigenvectors[1,0] * eigenvalues[1,0], cntr[1] - 0.01 * eigenvectors[1,1] * eigenvalues[1,0])
     angle = atan2(eigenvectors[0,1], eigenvectors[0,0]) # orientation in radians
     
     return img, cntr, p1, p2, angle

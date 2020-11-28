@@ -11,14 +11,17 @@ width: 1280
 height: 720
 camera_map_path: /home/demo/catkin_ws/src/assembly_camera_manager/maps/camera/base_to_azure1_rgb_camera_link_20201103-150928.json
 K: [1835.9295654296875, 0.0, 1916.5101318359375, 0.0, 1835.6832275390625, 1100.3082275390625, 0.0, 0.0, 1.0]
-roi: [640, 1920, 360, 1080]
+roi: [320, 2240, 180, 1260]
 class_names: ["background", "ikea_stefan_bracket", "ikea_stefan_bolt_side", "ikea_stefan_bolt_hip", "ikea_stefan_pin"]
 
 
 # Center Mask
 is_gpu_id: "1"
-is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/model_0047999.pth"
+is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask.pth"
 is_config_file: "/home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_FPN_ms_3x.yaml"
+# is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask_dcn.pth"
+# is_config_file: "/home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_dcn_FPN_ms_3x.yaml"
+roiofroi: [200, 900, 80, 700]
 is_thresh: 0.5
 
 # 2D to 3D pose

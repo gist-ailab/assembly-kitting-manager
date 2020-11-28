@@ -34,9 +34,8 @@ class KittingManager:
         rospy.loginfo("Starting kitting_manager.py")
 
         self.params = rospy.get_param("kitting_manager")
-        self.pad_factors = [1.2, 1.2, 1.2, 1.2]
         self.class_names = self.params["class_names"]
-        self.idx2color = [[128, 255, 128], [13, 128, 255], [217, 12, 232], [232, 12, 128]]
+        self.idx2color = [[42, 42, 165], [13, 128, 255], [217, 12, 232], [232, 12, 128]]
         self.roi = self.params["roi"]
         self.bridge = cv_bridge.CvBridge()
         # subscribers
@@ -95,6 +94,12 @@ class KittingManager:
 
         ## 3. Detect 2d pose
         poses_2d, vis_img = self.detect_2d_pose(rgb_img, vis_img, pred_classes, pred_boxes, pred_scores, pred_masks)
+        # sort pose_2d with score
+        if len(poses_2d) > 0:
+            poses_2d = sorted(poses_2d, key=lambda k: k['score'], reverse=True)
+            x1, x2, y1, y2 = poses_2d[0]["bbox"]
+            vis_img = cv2.putText(vis_img, "Best Grasp", (int(x1)-25, int(y2)+23), cv2.FONT_HERSHEY_SIMPLEX, 1, (13, 13, 255), 2, cv2.LINE_AA)
+            vis_img = cv2.rectangle(vis_img, (int(x1), int(y1)), (int(x2), int(y2)), (13, 13, 255), 3)
         self.vis_is_pub.publish(self.bridge.cv2_to_imgmsg(vis_img))
         
         ## 4. Convert 2d pose to 3d pose
@@ -110,8 +115,13 @@ class KittingManager:
         boxes, scores, is_obj_ids, rgb_crops, is_masks = [], [], [], [], []
         poses_2d = []
         self.object_ids = [] 
+        x_min, x_max, y_min, y_max =  self.params["roiofroi"]
+        vis_img = cv2.putText(vis_img, "ROI", (int(x_min)-5, int(y_min)-5), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 153, 0), 2, cv2.LINE_AA)
+        vis_img = cv2.rectangle(vis_img, (x_min, y_min), (x_max, y_max), (0, 153, 0), 2)
         for itr, (label, (x1, y1, x2, y2), score, mask) in enumerate(zip(pred_classes, pred_boxes, pred_scores, pred_masks)):
             if score < self.params["is_thresh"]:
+                continue
+            if x1 < x_min or x2 > x_max or y1 < y_min or y2 > y_max:
                 continue
             # get largest contour for each instance
             mask = np.uint8(mask)
@@ -127,15 +137,9 @@ class KittingManager:
             if self.params["class_names"][label+1] == "ikea_stefan_bracket":
                 x1, x2, y1, y2 = get_bbox_offset(x1, x2, y1, y2, self.params["crop_offset"], self.params["width"], self.params["height"])
                 rgb_crop = np.uint8(rgb_img[y1:y2, x1:x2].copy())
-                # cv2.imwrite("/home/demo/rgb_{}.png".format(itr), rgb_crop)
-                # rgb_crop = cv2.cvtColor(rgb_crop, cv2.COLOR_RGB2GRAY)
-                # clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize = (4,4))
-                # rgb_crop = clahe.apply(rgb_crop)
-                # rgb_crop = cv2.cvtColor(rgb_crop, cv2.COLOR_GRAY2RGB)
-                # cv2.imwrite("/home/demo/clahe_{}.png".format(itr), rgb_crop)
                 angle, p1, vis_img, is_stable = identify_bracket(self.bracket_sock, rgb_crop, vis_img.copy(), mask.copy(), cntr, p1, p2)
                 text = "stable" if is_stable else "unstable"
-                vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y2)+10), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.LINE_AA)
+                vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
             
             elif self.params["class_names"][label+1] == "ikea_stefan_bolt_side":
                 # angle, p1, vis_img = identify_side(self.side_sock, rgb_img.copy(), self.params["width"], self.params["height"], self.params["crop_offset"], vis_img.copy(), mask.copy(), cntr, p1, p2)
@@ -149,12 +153,13 @@ class KittingManager:
             
             object_id = self.params["class_names"][label+1] 
             self.object_ids.append(object_id)
-            # visualize results
-            vis_img = cv2.putText(vis_img, str(np.rad2deg(angle))[:3], (int(x1)-5, int(y2)+30), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.LINE_AA)
-            vis_img = cv2.putText(vis_img, self.params["class_names"][label+1].split('_')[-1], (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 1, self.idx2color[label], 2, cv2.FONT_HERSHEY_SIMPLEX)
-            vis_img = draw_axis(vis_img, cntr, p1, (0, 0, 255), 5)
+            # visualize results 
+            # + ' (' + str(np.rad2deg(angle))[:3] + ')'
+            text = self.params["class_names"][label+1].split('_')[-1] + '(' + str(score)[:4] + ')'
+            vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
+            vis_img = draw_axis(vis_img, cntr, p1, (127, 0, 255), 5)
 
-            pose_2d = {"px": cntr[0], "py": cntr[1], "angle": angle}
+            pose_2d = {"px": cntr[0], "py": cntr[1], "angle": angle, "score": score, "bbox": [x1, x2, y1, y2]}
             poses_2d.append(pose_2d)
         return poses_2d, vis_img
 
@@ -174,7 +179,7 @@ class KittingManager:
             # get points xyz around px, py
             is_mask = np.zeros([self.params["original_height"], self.params["original_width"]])
             is_mask[py-self.params["pix_near"]:py+self.params["pix_near"], px-self.params["pix_near"]:px+self.params["pix_near"]] = 1
-            cloud_center = orh.crop_with_2dmask(copy.deepcopy(cloud_cam), is_mask, self.K)
+            cloud_center = orh.crop_with_2dmask(copy.deepcopy(cloud_cam), is_mask, self.K_cropped)
             cloud_center_npy = np.asarray(cloud_center.points)
             mask = (np.nan_to_num(cloud_center_npy) != 0).any(axis=1)
             cloud_center_npy = cloud_center_npy[mask]
@@ -186,7 +191,6 @@ class KittingManager:
             # normal_center_npy = np.asarray(cloud_center.normals)
             # normal = - np.median(normal_center_npy, axis=0)
             # rot = tf_trans.rotation_matrix
-
 
             H_cam2obj = np.eye(4)
             H_cam2obj[:3, 3] = pos
