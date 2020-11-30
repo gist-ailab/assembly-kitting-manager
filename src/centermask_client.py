@@ -53,7 +53,7 @@ def setup_cfg(params):
 
 if __name__ == "__main__" :
 
-    yaml_path = os.path.join(Path(__file__).parent.parent, "params", "azure_centermask_GIST.yaml")
+    yaml_path = os.path.join(Path(__file__).parent.parent, "params", "azure_centermask_SNU.yaml")
     with open(yaml_path) as f:
         params = yaml.load(f, Loader=yaml.FullLoader)
     cfg = setup_cfg(params)

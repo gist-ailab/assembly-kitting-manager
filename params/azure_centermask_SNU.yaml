@@ -20,10 +20,11 @@ is_gpu_id: "1"
 is_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask.pth"
 is_config_file: "/home/dyros/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_FPN_ms_3x.yaml"
 is_thresh: 0.5
+roiofroi: [100, 900, 0, 720]
 
 # 2D to 3D pose
 crop_offset: 0.05
-pix_near: 60
+pix_near: 8
 angle_offset: 0
 
 # bracket

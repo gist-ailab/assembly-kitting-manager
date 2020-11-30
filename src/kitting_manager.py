@@ -139,6 +139,7 @@ class KittingManager:
                 rgb_crop = np.uint8(rgb_img[y1:y2, x1:x2].copy())
                 angle, p1, vis_img, is_stable = identify_bracket(self.bracket_sock, rgb_crop, vis_img.copy(), mask.copy(), cntr, p1, p2)
                 text = "stable" if is_stable else "unstable"
+                if not is_stable: score = 0
                 vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
             
             elif self.params["class_names"][label+1] == "ikea_stefan_bolt_side":
