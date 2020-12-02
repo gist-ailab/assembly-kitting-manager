@@ -49,11 +49,14 @@ $ ass && roslaunch assembly_camera_manager single_azure_manager.launch
 # gist
 $ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201121-220030'"
 # snu
-$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201123-160941'"
+$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201130-135053'"
 ```
 3. Launch kitting manager
 ```
+# gist
 $ ass && roslaunch assembly_kitting_manager kitting_manager.launch yaml:=azure_centermask_GIST
+# snu
+$ ass && roslaunch assembly_kitting_manager kitting_manager.launch yaml:=azure_centermask_SNU
 ```
 
 4. Instance segmentation using centermask
@@ -66,10 +69,6 @@ $ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/centermask_client
 $ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/bracket_client.py
 ```
 
-6. Side
-```
-$ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/side_client.py
-```
 
 
 

@@ -140,7 +140,11 @@ class KittingManager:
                 angle, p1, vis_img, is_stable = identify_bracket(self.bracket_sock, rgb_crop, vis_img.copy(), mask.copy(), cntr, p1, p2)
                 text = "stable" if is_stable else "unstable"
                 if not is_stable: score = 0
+<<<<<<< HEAD
                 vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.idx2color[label], 1, cv2.LINE_AA)
+=======
+                vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
+>>>>>>> ecfe62557128c14e9fc8982fc3e8999aa42a9885
             
             elif self.params["class_names"][label+1] == "ikea_stefan_bolt_side":
                 angle, p1, vis_img = identify_side(self.side_sock, rgb_img.copy(), self.params["width"], self.params["height"], self.params["crop_offset"], vis_img.copy(), mask.copy(), cntr, p1, p2)
