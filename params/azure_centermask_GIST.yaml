@@ -17,10 +17,8 @@ class_names: ["background", "ikea_stefan_bracket", "ikea_stefan_bolt_side", "ike
 
 # Center Mask
 is_gpu_id: "1"
-is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask.pth"
+is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask_finetuned.pth"
 is_config_file: "/home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_FPN_ms_3x.yaml"
-# is_weight_path: "/home/demo/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask_dcn.pth"
-# is_config_file: "/home/demo/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_dcn_FPN_ms_3x.yaml"
 roiofroi: [200, 900, 80, 700]
 is_thresh: 0.5
 

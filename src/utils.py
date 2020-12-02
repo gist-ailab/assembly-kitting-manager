@@ -6,6 +6,8 @@ import yaml
 from pathlib import Path
 from easy_tcp_python2_3 import socket_utils as su
 import struct
+import time 
+
 
 yaml_path = str(Path(__file__).parent.parent) + "/params/azure_centermask_GIST.yaml"
 with open(yaml_path) as f:
@@ -102,10 +104,11 @@ def identify_bracket(sock, rgb_crop, vis_img, mask, cntr, p1, p2):
     angle = get_2d_orientation(cntr, p1)
     return angle, p1, vis_img, bool(pred_result)
 
-# def identify_side(sock, rgb_img, w, h, offset, vis_img, mask, cntr, p1, p2):
-def identify_side(vis_img, mask, cntr, p1, p2):
+def identify_side(sock, rgb_img, w, h, offset, vis_img, mask, cntr, p1, p2):
+# def identify_side(vis_img, rgb_crop, mask, cntr, p1, p2):
 
     mask1, mask2, cntr, p1, p2 = divide_mask(mask, cntr, p1, p2)
+
     contours1, _ = cv2.findContours(mask1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours2, _ = cv2.findContours(mask2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     rect1 = cv2.minAreaRect(max(contours1, key = cv2.contourArea))
@@ -116,14 +119,20 @@ def identify_side(vis_img, mask, cntr, p1, p2):
     box1 = np.int0(box1)
     box2 = cv2.boxPoints(rect2)
     box2 = np.int0(box2)
-    # x1, x2, y1, y2 = get_xy2box(box1, offset, w, h)
-    # rgb1 = np.uint8(rgb_img[y1:y2, x1:x2].copy())
-    # su.sendall_image(sock, rgb1)
-    # pred_label1 = bool(su.recvall_pickle(sock))
-    # prob1 = bool(su.recvall_pickle(sock))
+    offset = 0
+    x1, x2, y1, y2 = get_xy2box(box1, offset, w, h)
+    rgb1 = np.uint8(rgb_img[y1:y2, x1:x2].copy())
+    su.sendall_image(sock, rgb1)
+    is_bolt = su.recvall_pickle(sock)
+    if is_bolt: 
+        cv2.drawContours(vis_img, [box1], 0, (160, 128, 32), 1)
+    else:
+        p1 = cntr + 2*(cntr-p1)
+        cv2.drawContours(vis_img, [box2], 0, (160, 128, 32), 1)
 
     # x1, x2, y1, y2 = get_xy2box(box2, offset, w, h)
     # rgb2 = np.uint8(rgb_img[y1:y2, x1:x2].copy())
+    # time.sleep(0.3)
     # su.sendall_image(sock, rgb2)
     # pred_label2 = bool(su.recvall_pickle(sock))
     # prob2 = bool(su.recvall_pickle(sock))
@@ -141,11 +150,7 @@ def identify_side(vis_img, mask, cntr, p1, p2):
     #     cv2.drawContours(vis_img, [box2], 0, (128, 160, 32), 2)
     # else:
     #     cv2.drawContours(vis_img, [box1], 0, (128, 160, 32), 2)
-    if w1 < w2:
-        p1 = cntr + 2*(cntr-p1)    
-        cv2.drawContours(vis_img, [box2], 0, (128, 160, 32), 2)
-    else:
-        cv2.drawContours(vis_img, [box1], 0, (128, 160, 32), 2)
+
     angle = get_2d_orientation(cntr, p1)
     return angle, p1, vis_img
 
@@ -172,7 +177,7 @@ def divide_mask(mask, cntr, p1, p2):
     p1_cntr = p1 - cntr
     p2_cntr = p2 - cntr
     crop_mask = np.zeros((height, width), np.uint8)
-    pts = np.array([10*p2_cntr+cntr, 10*(p1_cntr+p2_cntr)+cntr, 10*(p1_cntr-p2_cntr)+cntr, -10*p2_cntr+cntr])
+    pts = np.array([50*p2_cntr+cntr, 50*(p1_cntr+p2_cntr)+cntr, 50*(p1_cntr-p2_cntr)+cntr, -50*p2_cntr+cntr])
     _ = cv2.drawContours(crop_mask, np.int32([pts]), 0, 255, -1)
     mask1 = mask.copy()
     mask2 = mask.copy()
@@ -207,7 +212,6 @@ def convert_2d_to_3d_position(cloud, u, v):
     point_step = cloud.point_step
     row_step = cloud.row_step
     array_pos = v*row_step + u*point_step
-    print(len(cloud.data))
     bytesX = [ord(x) for x in cloud.data[array_pos:array_pos+4]]
     bytesY = [ord(x) for x in cloud.data[array_pos+4: array_pos+8]]
     bytesZ = [ord(x) for x in cloud.data[array_pos+8:array_pos+12]]

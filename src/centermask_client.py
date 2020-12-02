@@ -66,21 +66,6 @@ if __name__ == "__main__" :
     while True:
         img = su.recvall_image(sock) 
         predictions, vis_output = demo.run_on_image(img)
-
-        # w = params["width"] // params["grid_size"]
-        # h = params["height"] // params["grid_size"]
-        # img_grids = []
-        # vis_img = np.zeros_like(img)
-        # img_grids = []
-        # for i in range(params["grid_size"]):
-        #     for j in range(params["grid_size"]):
-        #         img_grids.append(img[h*i:h*(i+1), w*j:w*(j+1), :])
-        # predictions, visualized_outputs = demo.run_on_multiple_image(img_grids)
-        # for itr, vis_output in enumerate(visualized_outputs):
-        #     i, j = nine_to_3x3(itr)
-        #     vis_img[h*i:h*(i+1), w*j:w*(j+1), :] = vis_output.get_image()[:, :, ::-1]
-
-        
         pred_masks = predictions["instances"].pred_masks.cpu().detach().numpy() # (N, H, W),
         pred_boxes = predictions["instances"].pred_boxes.tensor.cpu().detach().numpy() # (x1, y1, x2, y2)
         pred_scores = predictions["instances"].scores.cpu().detach().numpy()  # a vector of N confidence scores.

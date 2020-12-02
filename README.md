@@ -72,6 +72,9 @@ $ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/side_client.py
 ```
 
 
+
+
+
 ## Authors
 * **Seunghyeok Back** [seungback](https://github.com/SeungBack)
 

@@ -56,8 +56,8 @@ class KittingManager:
         self.cm_sock, _ = su.initialize_server(self.params["tcp_ip"], self.params["centermask_tcp_port"])
         rospy.loginfo("Waiting for bracket client {}:{}".format(self.params["tcp_ip"], self.params["bracket_tcp_port"]))
         self.bracket_sock, _ = su.initialize_server(self.params["tcp_ip"], self.params["bracket_tcp_port"])
-        # rospy.loginfo("Waiting for side client {}:{}".format(self.params["tcp_ip"], self.params["side_tcp_port"]))
-        # self.side_sock, _ = su.initialize_server(self.params["tcp_ip"], self.params["side_tcp_port"])
+        rospy.loginfo("Waiting for side client {}:{}".format(self.params["tcp_ip"], self.params["side_tcp_port"]))
+        self.side_sock, _ = su.initialize_server(self.params["tcp_ip"], self.params["side_tcp_port"])
 
         rgb_sub = message_filters.Subscriber(self.params["rgb"], Image, buff_size=2160*3840*3)
         point_sub = message_filters.Subscriber(self.params["point"], PointCloud2, buff_size=2160*3840*3)
@@ -98,7 +98,7 @@ class KittingManager:
         if len(poses_2d) > 0:
             poses_2d = sorted(poses_2d, key=lambda k: k['score'], reverse=True)
             x1, x2, y1, y2 = poses_2d[0]["bbox"]
-            vis_img = cv2.putText(vis_img, "Best Grasp", (int(x1)-25, int(y2)+23), cv2.FONT_HERSHEY_SIMPLEX, 1, (13, 13, 255), 2, cv2.LINE_AA)
+            vis_img = cv2.putText(vis_img, "Best Grasp", (int(x1)-15, int(y2)+20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (13, 13, 255), 2, cv2.LINE_AA)
             vis_img = cv2.rectangle(vis_img, (int(x1), int(y1)), (int(x2), int(y2)), (13, 13, 255), 3)
         self.vis_is_pub.publish(self.bridge.cv2_to_imgmsg(vis_img))
         
@@ -116,7 +116,7 @@ class KittingManager:
         poses_2d = []
         self.object_ids = [] 
         x_min, x_max, y_min, y_max =  self.params["roiofroi"]
-        vis_img = cv2.putText(vis_img, "ROI", (int(x_min)-5, int(y_min)-5), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 153, 0), 2, cv2.LINE_AA)
+        vis_img = cv2.putText(vis_img, "ROI", (int(x_min)-5, int(y_min)-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 153, 0), 1, cv2.LINE_AA)
         vis_img = cv2.rectangle(vis_img, (x_min, y_min), (x_max, y_max), (0, 153, 0), 2)
         for itr, (label, (x1, y1, x2, y2), score, mask) in enumerate(zip(pred_classes, pred_boxes, pred_scores, pred_masks)):
             if score < self.params["is_thresh"]:
@@ -139,11 +139,11 @@ class KittingManager:
                 rgb_crop = np.uint8(rgb_img[y1:y2, x1:x2].copy())
                 angle, p1, vis_img, is_stable = identify_bracket(self.bracket_sock, rgb_crop, vis_img.copy(), mask.copy(), cntr, p1, p2)
                 text = "stable" if is_stable else "unstable"
-                vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
+                if not is_stable: score = 0
+                vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.idx2color[label], 1, cv2.LINE_AA)
             
             elif self.params["class_names"][label+1] == "ikea_stefan_bolt_side":
-                # angle, p1, vis_img = identify_side(self.side_sock, rgb_img.copy(), self.params["width"], self.params["height"], self.params["crop_offset"], vis_img.copy(), mask.copy(), cntr, p1, p2)
-                angle, p1, vis_img = identify_side(vis_img.copy(), mask.copy(), cntr, p1, p2)
+                angle, p1, vis_img = identify_side(self.side_sock, rgb_img.copy(), self.params["width"], self.params["height"], self.params["crop_offset"], vis_img.copy(), mask.copy(), cntr, p1, p2)
             
             elif self.params["class_names"][label+1] == "ikea_stefan_bolt_hip":
                 angle, p1, vis_img = identify_hip(vis_img.copy(), mask.copy(), cntr, p1, p2)
@@ -156,7 +156,7 @@ class KittingManager:
             # visualize results 
             # + ' (' + str(np.rad2deg(angle))[:3] + ')'
             text = self.params["class_names"][label+1].split('_')[-1] + '(' + str(score)[:4] + ')'
-            vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
+            # vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
             vis_img = draw_axis(vis_img, cntr, p1, (127, 0, 255), 5)
 
             pose_2d = {"px": cntr[0], "py": cntr[1], "angle": angle, "score": score, "bbox": [x1, x2, y1, y2]}

@@ -41,9 +41,6 @@ if __name__ == "__main__" :
     while True:
         img = su.recvall_image(sock) 
         img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_LINEAR)
-        # cv2.imwrite('/home/demo/catkin_ws/src/assembly_kitting_manager/src/0/{}.png'.format(time.time()), img)
-        # print(time.time())
-        # time.sleep(0.3)
         img = transform(img).unsqueeze(0)
         output = model(img.to(device))
 

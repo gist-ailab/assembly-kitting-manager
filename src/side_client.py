@@ -46,8 +46,7 @@ if __name__ == "__main__" :
         topk=(1,)
         maxk = max(topk)
         _, pred = output.topk(maxk, 1, True, True)
-        pred = pred.t()[0]
+        pred = np.bool(pred.t()[0].cpu().detach().numpy())
         su.sendall_pickle(sock, pred)
-        su.sendall_pickle(sock, output[0][pred])
 
     sock.close()
