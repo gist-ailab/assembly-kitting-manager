@@ -129,6 +129,7 @@ def identify_side(sock, rgb_img, w, h, offset, vis_img, mask, cntr, p1, p2):
     else:
         p1 = cntr + 2*(cntr-p1)
         cv2.drawContours(vis_img, [box2], 0, (160, 128, 32), 1)
+        
 
     # x1, x2, y1, y2 = get_xy2box(box2, offset, w, h)
     # rgb2 = np.uint8(rgb_img[y1:y2, x1:x2].copy())
