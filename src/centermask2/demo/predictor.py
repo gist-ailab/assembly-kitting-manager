@@ -771,7 +771,7 @@ class Visualizer:
                     or y1 - y0 < 40 * self.output.scale
                 ):
                     if y1 >= self.output.height - 5:
-                        text_pos = (x1, y0) - 15
+                        text_pos = (x1, y0 - 15) 
                     else:
                         text_pos = (x0, y1)
 

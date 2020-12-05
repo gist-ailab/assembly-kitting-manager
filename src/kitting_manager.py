@@ -114,7 +114,7 @@ class KittingManager:
     def detect_2d_pose(self, rgb_img, vis_img, pred_classes, pred_boxes, pred_scores, pred_masks):
         boxes, scores, is_obj_ids, rgb_crops, is_masks = [], [], [], [], []
         poses_2d = []
-        self.object_ids = [] 
+        object_ids = [] 
         x_min, x_max, y_min, y_max =  self.params["roiofroi"]
         vis_img = cv2.putText(vis_img, "ROI", (int(x_min)-5, int(y_min)-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 153, 0), 1, cv2.LINE_AA)
         vis_img = cv2.rectangle(vis_img, (x_min, y_min), (x_max, y_max), (0, 153, 0), 2)
@@ -126,6 +126,8 @@ class KittingManager:
             # get largest contour for each instance
             mask = np.uint8(mask)
             contours, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if len(contours) == 0:
+                continue
             contour = max(contours, key = cv2.contourArea)
             area = cv2.contourArea(contour)
             # ignore too small or large objects
@@ -152,25 +154,24 @@ class KittingManager:
                 angle, p1, vis_img = identify_pin(vis_img, cntr, p1)
             
             object_id = self.params["class_names"][label+1] 
-            self.object_ids.append(object_id)
+            object_ids.append(object_id)
             # visualize results 
-            # + ' (' + str(np.rad2deg(angle))[:3] + ')'
             text = self.params["class_names"][label+1].split('_')[-1] + '(' + str(score)[:4] + ')'
-            # vis_img = cv2.putText(vis_img, text, (int(x1)-5, int(y1)-5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, self.idx2color[label], 1, cv2.LINE_AA)
             vis_img = draw_axis(vis_img, cntr, p1, (127, 0, 255), 5)
 
             pose_2d = {"px": cntr[0], "py": cntr[1], "angle": angle, "score": score, "bbox": [x1, x2, y1, y2]}
             poses_2d.append(pose_2d)
+        self.object_ids = object_ids
         return poses_2d, vis_img
 
     def convert_2d_to_3d_pose(self, header, poses_2d, cloud_cam):
         
-        self.object_poses = PoseArray()
-        self.object_poses.header = header
-        self.object_poses.poses = []
-        self.grasp_poses = PoseArray()
-        self.grasp_poses.header = header
-        self.grasp_poses.poses = []
+        object_poses = PoseArray()
+        object_poses.header = header
+        object_poses.poses = []
+        grasp_poses = PoseArray()
+        grasp_poses.header = header
+        grasp_poses.poses = []
         for pose_2d in poses_2d:
             start_time = time.time()
             px = pose_2d["px"]
@@ -199,10 +200,11 @@ class KittingManager:
             pos = H_map2obj[:3, 3]
             quat = tf_trans.quaternion_from_matrix(H_map2obj)
             object_pose = orh.pq_to_pose(pos, quat)
-            self.object_poses.poses.append(object_pose)
-            self.grasp_poses.poses.append(object_pose)
-
-        return self.object_poses
+            object_poses.poses.append(object_pose)
+            grasp_poses.poses.append(object_pose)
+        self.object_poses = object_poses
+        self.grasp_poses = grasp_poses
+        return object_poses
 
     def get_object_pose_array(self, msg):
         

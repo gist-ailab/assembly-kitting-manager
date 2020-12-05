@@ -49,7 +49,7 @@ $ ass && roslaunch assembly_camera_manager single_azure_manager.launch
 # gist
 $ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201121-220030'"
 # snu
-$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201130-135053'"
+$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201205-163245'"
 ```
 3. Launch kitting manager
 ```
@@ -67,6 +67,11 @@ $ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/centermask_client
 5. Bracket
 ```
 $ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/bracket_client.py
+```
+
+6. Side
+```
+$ ass37 && python ~/catkin_ws/src/assembly_kitting_manager/src/side_client.py
 ```
 
 
