@@ -49,7 +49,7 @@ $ ass && roslaunch assembly_camera_manager single_azure_manager.launch
 # gist
 $ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201121-220030'"
 # snu
-$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20201205-163245'"
+$ rosservice call /azure1/set_camera_pose "json_file: 'base_to_azure1_rgb_camera_link_20210306-163146'"
 ```
 3. Launch kitting manager
 ```

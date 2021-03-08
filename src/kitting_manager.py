@@ -159,9 +159,8 @@ class KittingManager:
             text = self.params["class_names"][label+1].split('_')[-1] + '(' + str(score)[:4] + ')'
             vis_img = draw_axis(vis_img, cntr, p1, (127, 0, 255), 5)
 
-            pose_2d = {"px": cntr[0], "py": cntr[1], "angle": angle, "score": score, "bbox": [x1, x2, y1, y2]}
+            pose_2d = {"px": cntr[0], "py": cntr[1], "angle": angle, "score": score, "bbox": [x1, x2, y1, y2], "object_id": object_id}
             poses_2d.append(pose_2d)
-        self.object_ids = object_ids
         return poses_2d, vis_img
 
     def convert_2d_to_3d_pose(self, header, poses_2d, cloud_cam):
@@ -172,6 +171,7 @@ class KittingManager:
         grasp_poses = PoseArray()
         grasp_poses.header = header
         grasp_poses.poses = []
+        object_ids = []
         for pose_2d in poses_2d:
             start_time = time.time()
             px = pose_2d["px"]
@@ -202,8 +202,10 @@ class KittingManager:
             object_pose = orh.pq_to_pose(pos, quat)
             object_poses.poses.append(object_pose)
             grasp_poses.poses.append(object_pose)
+            object_ids.append(pose_2d["object_id"])
         self.object_poses = object_poses
         self.grasp_poses = grasp_poses
+        self.object_ids = object_ids
         return object_poses
 
     def get_object_pose_array(self, msg):

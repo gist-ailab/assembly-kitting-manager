@@ -16,7 +16,7 @@ class_names: ["background", "ikea_stefan_bracket", "ikea_stefan_bolt_side", "ike
 
 
 # Center Mask
-is_gpu_id: "1"
+is_gpu_id: "0"
 is_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/centermask.pth"
 is_config_file: "/home/dyros/catkin_ws/src/assembly_kitting_manager/src/centermask2/configs/stefan/centermask_V_99_eSE_FPN_ms_3x.yaml"
 is_thresh: 0.5
@@ -28,12 +28,12 @@ pix_near: 5
 angle_offset: 90
 
 # bracket
-bracket_gpu_id: "1"
+bracket_gpu_id: "0"
 bracket_model_name: "mixnet_xl"
 bracket_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/bracket.pth"
 
 # side
-side_gpu_id: "1"
+side_gpu_id: "0"
 side_model_name: "mixnet_xl"
 side_weight_path: "/home/dyros/catkin_ws/src/assembly_kitting_manager/pretrained_weights/side.pth"
 
